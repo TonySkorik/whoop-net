@@ -8,7 +8,7 @@ namespace WhoopNet.Models;
 public class RecoveryScore
 {
     /// <summary>
-    /// The user's recovery percentage (0-100)
+    /// Indicates whether the user is in calibration mode
     /// </summary>
     [JsonPropertyName("user_calibrating")]
     public bool UserCalibrating { get; set; }
