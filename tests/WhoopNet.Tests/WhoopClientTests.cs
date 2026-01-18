@@ -1,8 +1,7 @@
-using System.Net;
-using System.Net.Http.Json;
 using Moq;
 using Moq.Protected;
-using NUnit.Framework;
+using System.Net;
+using System.Net.Http.Json;
 using WhoopNet.Models;
 
 namespace WhoopNet.Tests;
@@ -168,11 +167,11 @@ public class WhoopClientTests
     {
         var expectedResponse = new PaginatedResponse<Cycle>
         {
-            Records = new List<Cycle>
-            {
+            Records =
+            [
                 new Cycle { Id = 1, UserId = 123 },
                 new Cycle { Id = 2, UserId = 123 }
-            },
+            ],
             NextToken = "next-page-token"
         };
 
@@ -219,11 +218,11 @@ public class WhoopClientTests
     {
         var expectedResponse = new PaginatedResponse<Recovery>
         {
-            Records = new List<Recovery>
-            {
+            Records =
+            [
                 new Recovery { CycleId = 1, UserId = 123 },
                 new Recovery { CycleId = 2, UserId = 123 }
-            }
+            ]
         };
 
         SetupMockResponse(HttpStatusCode.OK, expectedResponse);
@@ -269,11 +268,11 @@ public class WhoopClientTests
     {
         var expectedResponse = new PaginatedResponse<Workout>
         {
-            Records = new List<Workout>
-            {
+            Records =
+            [
                 new Workout { Id = 1, UserId = 123, SportId = 1 },
                 new Workout { Id = 2, UserId = 123, SportId = 2 }
-            }
+            ]
         };
 
         SetupMockResponse(HttpStatusCode.OK, expectedResponse);
@@ -318,11 +317,11 @@ public class WhoopClientTests
     {
         var expectedResponse = new PaginatedResponse<Sleep>
         {
-            Records = new List<Sleep>
-            {
+            Records =
+            [
                 new Sleep { Id = 1, UserId = 123, Nap = false },
                 new Sleep { Id = 2, UserId = 123, Nap = true }
-            }
+            ]
         };
 
         SetupMockResponse(HttpStatusCode.OK, expectedResponse);
@@ -358,7 +357,7 @@ public class WhoopClientTests
         var end = new DateTime(2024, 1, 31, 23, 59, 59, DateTimeKind.Utc);
         var expectedResponse = new PaginatedResponse<Cycle>
         {
-            Records = new List<Cycle>()
+            Records = []
         };
 
         string? capturedUri = null;

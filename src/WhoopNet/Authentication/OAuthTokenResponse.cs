@@ -5,7 +5,7 @@ namespace WhoopNet.Authentication;
 /// <summary>
 /// Represents an OAuth 2.0 token response from the WHOOP API.
 /// </summary>
-public class OAuthTokenResponse
+public sealed class OAuthTokenResponse
 {
     /// <summary>
     /// The access token to use for API requests.

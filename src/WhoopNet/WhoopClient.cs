@@ -7,7 +7,7 @@ namespace WhoopNet;
 /// <summary>
 /// Client for interacting with the WHOOP API.
 /// </summary>
-public class WhoopClient : IDisposable
+public sealed class WhoopClient : IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly bool _disposeHttpClient;
@@ -43,7 +43,9 @@ public class WhoopClient : IDisposable
         {
             BaseAddress = new Uri(BaseUrl)
         };
+
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
         _disposeHttpClient = true;
     }
 
@@ -68,39 +70,8 @@ public class WhoopClient : IDisposable
     {
         var response = await _httpClient.GetAsync(endpoint, cancellationToken);
         response.EnsureSuccessStatusCode();
+
         return await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
-    }
-
-    /// <summary>
-    /// Helper method to build query string from pagination and filter parameters.
-    /// </summary>
-    private static string BuildQueryString(int? limit, DateTime? start, DateTime? end, string? nextToken)
-    {
-        var queryParams = new List<string>();
-        
-        if (limit.HasValue)
-        {
-            queryParams.Add($"limit={limit.Value}");
-        }
-        
-        if (start.HasValue)
-        {
-            queryParams.Add($"start={start.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        }
-        
-        if (end.HasValue)
-        {
-            queryParams.Add($"end={end.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        }
-        
-        if (!string.IsNullOrEmpty(nextToken))
-        {
-            queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
-        }
-
-        return queryParams.Count > 0
-            ? "?" + string.Join("&", queryParams)
-            : string.Empty;
     }
 
     /// <summary>
@@ -244,14 +215,42 @@ public class WhoopClient : IDisposable
     public Task<ActivityMapping?> GetActivityMappingAsync(int activityV1Id, CancellationToken cancellationToken = default) =>
         GetAsync<ActivityMapping>($"/v1/activity-mapping/{activityV1Id}", cancellationToken);
 
-    /// <summary>
-    /// Disposes the HttpClient if it was created internally.
-    /// </summary>
+    private static string BuildQueryString(int? limit, DateTime? start, DateTime? end, string? nextToken)
+    {
+        var queryParams = new List<string>();
+
+        if (limit.HasValue)
+        {
+            queryParams.Add($"limit={limit.Value}");
+        }
+
+        if (start.HasValue)
+        {
+            queryParams.Add($"start={start.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
+        }
+
+        if (end.HasValue)
+        {
+            queryParams.Add($"end={end.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
+        }
+
+        if (!string.IsNullOrEmpty(nextToken))
+        {
+            queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
+        }
+
+        return queryParams.Count > 0
+            ? "?" + string.Join("&", queryParams)
+            : string.Empty;
+    }
+
+    /// <inheritdoc/>
     public void Dispose()
     {
         if (_disposeHttpClient)
         {
             _httpClient?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

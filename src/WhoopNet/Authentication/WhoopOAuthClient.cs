@@ -27,7 +27,7 @@ public class WhoopOAuthClient : IDisposable
         {
             throw new ArgumentException("Client ID cannot be null or empty", nameof(clientId));
         }
-        
+
         if (string.IsNullOrWhiteSpace(clientSecret))
         {
             throw new ArgumentException("Client secret cannot be null or empty", nameof(clientSecret));
@@ -61,7 +61,7 @@ public class WhoopOAuthClient : IDisposable
         {
             throw new ArgumentException("Redirect URI cannot be null or empty", nameof(redirectUri));
         }
-        
+
         if (string.IsNullOrWhiteSpace(scope))
         {
             throw new ArgumentException("Scope cannot be null or empty", nameof(scope));
@@ -77,10 +77,10 @@ public class WhoopOAuthClient : IDisposable
 
         if (!string.IsNullOrWhiteSpace(state))
         {
-            queryParams["state"] = state;
+            queryParams["state"] = state!;
         }
 
-        var queryString = string.Join("&", queryParams.Select(kvp => 
+        var queryString = string.Join("&", queryParams.Select(kvp =>
             $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
 
         return $"{AuthorizationUrl}?{queryString}";
@@ -94,15 +94,15 @@ public class WhoopOAuthClient : IDisposable
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The OAuth token response containing the access token.</returns>
     public async Task<OAuthTokenResponse?> ExchangeCodeForTokenAsync(
-        string code, 
-        string redirectUri, 
+        string code,
+        string redirectUri,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(code))
         {
             throw new ArgumentException("Authorization code cannot be null or empty", nameof(code));
         }
-        
+
         if (string.IsNullOrWhiteSpace(redirectUri))
         {
             throw new ArgumentException("Redirect URI cannot be null or empty", nameof(redirectUri));
@@ -131,7 +131,7 @@ public class WhoopOAuthClient : IDisposable
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The OAuth token response containing the new access token.</returns>
     public async Task<OAuthTokenResponse?> RefreshTokenAsync(
-        string refreshToken, 
+        string refreshToken,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(refreshToken))
@@ -162,6 +162,7 @@ public class WhoopOAuthClient : IDisposable
         if (_disposeHttpClient)
         {
             _httpClient?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

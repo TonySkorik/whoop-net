@@ -6,17 +6,17 @@ namespace WhoopNet.Models;
 /// Represents a paginated response.
 /// </summary>
 /// <typeparam name="T">The type of items in the response.</typeparam>
-public class PaginatedResponse<T>
+public sealed class PaginatedResponse<T>
 {
     /// <summary>
     /// The list of records in this page.
     /// </summary>
     [JsonPropertyName("records")]
-    public List<T>? Records { get; set; }
+    public List<T>? Records { get; init; }
 
     /// <summary>
     /// The token to use for fetching the next page of results.
     /// </summary>
     [JsonPropertyName("next_token")]
-    public string? NextToken { get; set; }
+    public string? NextToken { get; init; }
 }
