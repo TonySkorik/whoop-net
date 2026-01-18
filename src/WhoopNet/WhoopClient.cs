@@ -79,16 +79,24 @@ public class WhoopClient : IDisposable
         var queryParams = new List<string>();
         
         if (limit.HasValue)
+        {
             queryParams.Add($"limit={limit.Value}");
+        }
         
         if (start.HasValue)
+        {
             queryParams.Add($"start={start.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
+        }
         
         if (end.HasValue)
+        {
             queryParams.Add($"end={end.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
+        }
         
         if (!string.IsNullOrEmpty(nextToken))
+        {
             queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
+        }
 
         return queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : string.Empty;
     }

@@ -24,10 +24,14 @@ public class WhoopOAuthClient : IDisposable
     public WhoopOAuthClient(string clientId, string clientSecret, HttpClient? httpClient = null)
     {
         if (string.IsNullOrWhiteSpace(clientId))
+        {
             throw new ArgumentException("Client ID cannot be null or empty", nameof(clientId));
+        }
         
         if (string.IsNullOrWhiteSpace(clientSecret))
+        {
             throw new ArgumentException("Client secret cannot be null or empty", nameof(clientSecret));
+        }
 
         _clientId = clientId;
         _clientSecret = clientSecret;
@@ -54,10 +58,14 @@ public class WhoopOAuthClient : IDisposable
     public string BuildAuthorizationUrl(string redirectUri, string scope, string? state = null)
     {
         if (string.IsNullOrWhiteSpace(redirectUri))
+        {
             throw new ArgumentException("Redirect URI cannot be null or empty", nameof(redirectUri));
+        }
         
         if (string.IsNullOrWhiteSpace(scope))
+        {
             throw new ArgumentException("Scope cannot be null or empty", nameof(scope));
+        }
 
         var queryParams = new Dictionary<string, string>
         {
@@ -91,10 +99,14 @@ public class WhoopOAuthClient : IDisposable
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(code))
+        {
             throw new ArgumentException("Authorization code cannot be null or empty", nameof(code));
+        }
         
         if (string.IsNullOrWhiteSpace(redirectUri))
+        {
             throw new ArgumentException("Redirect URI cannot be null or empty", nameof(redirectUri));
+        }
 
         var requestData = new Dictionary<string, string>
         {
@@ -123,7 +135,9 @@ public class WhoopOAuthClient : IDisposable
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(refreshToken))
+        {
             throw new ArgumentException("Refresh token cannot be null or empty", nameof(refreshToken));
+        }
 
         var requestData = new Dictionary<string, string>
         {
