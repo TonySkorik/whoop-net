@@ -5,7 +5,7 @@ using WhoopNet.Models;
 namespace WhoopNet;
 
 /// <summary>
-/// Client for interacting with the WHOOP API
+/// Client for interacting with the WHOOP API.
 /// </summary>
 public class WhoopClient : IDisposable
 {
@@ -14,9 +14,9 @@ public class WhoopClient : IDisposable
     private const string BaseUrl = "https://api.prod.whoop.com";
 
     /// <summary>
-    /// Initializes a new instance of the WhoopClient class with a custom HttpClient
+    /// Initializes a new instance of the WhoopClient class with a custom HttpClient.
     /// </summary>
-    /// <param name="httpClient">The HttpClient to use for API requests</param>
+    /// <param name="httpClient">The HttpClient to use for API requests.</param>
     public WhoopClient(HttpClient httpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -29,9 +29,9 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Initializes a new instance of the WhoopClient class with an access token
+    /// Initializes a new instance of the WhoopClient class with an access token.
     /// </summary>
-    /// <param name="accessToken">The OAuth 2.0 access token</param>
+    /// <param name="accessToken">The OAuth 2.0 access token.</param>
     public WhoopClient(string accessToken)
     {
         if (string.IsNullOrWhiteSpace(accessToken))
@@ -48,9 +48,9 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Sets the access token for authentication
+    /// Sets the access token for authentication.
     /// </summary>
-    /// <param name="accessToken">The OAuth 2.0 access token</param>
+    /// <param name="accessToken">The OAuth 2.0 access token.</param>
     public void SetAccessToken(string accessToken)
     {
         if (string.IsNullOrWhiteSpace(accessToken))
@@ -62,7 +62,7 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Helper method to perform GET request and deserialize JSON response
+    /// Helper method to perform GET request and deserialize JSON response.
     /// </summary>
     private async Task<T?> GetAsync<T>(string endpoint, CancellationToken cancellationToken = default)
     {
@@ -72,7 +72,7 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Helper method to build query string from pagination and filter parameters
+    /// Helper method to build query string from pagination and filter parameters.
     /// </summary>
     private static string BuildQueryString(int? limit, DateTime? start, DateTime? end, string? nextToken)
     {
@@ -94,39 +94,39 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Gets the user's basic profile information
+    /// Gets the user's basic profile information.
     /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The user's profile information</returns>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The user's profile information.</returns>
     public Task<UserProfile?> GetUserProfileAsync(CancellationToken cancellationToken = default) =>
         GetAsync<UserProfile>("/v2/user/profile/basic", cancellationToken);
 
     /// <summary>
-    /// Gets the user's body measurements
+    /// Gets the user's body measurements.
     /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The user's body measurements</returns>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The user's body measurements.</returns>
     public Task<BodyMeasurement?> GetBodyMeasurementAsync(CancellationToken cancellationToken = default) =>
         GetAsync<BodyMeasurement>("/v2/user/measurement/body", cancellationToken);
 
     /// <summary>
-    /// Gets a specific cycle by ID
+    /// Gets a specific cycle by ID.
     /// </summary>
-    /// <param name="cycleId">The cycle ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The cycle information</returns>
+    /// <param name="cycleId">The cycle ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The cycle information.</returns>
     public Task<Cycle?> GetCycleAsync(int cycleId, CancellationToken cancellationToken = default) =>
         GetAsync<Cycle>($"/v2/cycle/{cycleId}", cancellationToken);
 
     /// <summary>
-    /// Gets a paginated list of cycles for the user
+    /// Gets a paginated list of cycles for the user.
     /// </summary>
-    /// <param name="limit">Maximum number of records to return (default: 25)</param>
-    /// <param name="start">Start date for filtering (ISO 8601 format)</param>
-    /// <param name="end">End date for filtering (ISO 8601 format)</param>
-    /// <param name="nextToken">Token for pagination</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>A paginated response containing cycles</returns>
+    /// <param name="limit">Maximum number of records to return (default: 25).</param>
+    /// <param name="start">Start date for filtering (ISO 8601 format).</param>
+    /// <param name="end">End date for filtering (ISO 8601 format).</param>
+    /// <param name="nextToken">Token for pagination.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A paginated response containing cycles.</returns>
     public Task<PaginatedResponse<Cycle>?> GetCyclesAsync(
         int? limit = null,
         DateTime? start = null,
@@ -139,23 +139,23 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Gets a specific recovery by cycle ID
+    /// Gets a specific recovery by cycle ID.
     /// </summary>
-    /// <param name="cycleId">The cycle ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The recovery information</returns>
+    /// <param name="cycleId">The cycle ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The recovery information.</returns>
     public Task<Recovery?> GetRecoveryAsync(int cycleId, CancellationToken cancellationToken = default) =>
         GetAsync<Recovery>($"/v2/recovery/{cycleId}", cancellationToken);
 
     /// <summary>
-    /// Gets a paginated list of recoveries for the user
+    /// Gets a paginated list of recoveries for the user.
     /// </summary>
-    /// <param name="limit">Maximum number of records to return (default: 25)</param>
-    /// <param name="start">Start date for filtering (ISO 8601 format)</param>
-    /// <param name="end">End date for filtering (ISO 8601 format)</param>
-    /// <param name="nextToken">Token for pagination</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>A paginated response containing recoveries</returns>
+    /// <param name="limit">Maximum number of records to return (default: 25).</param>
+    /// <param name="start">Start date for filtering (ISO 8601 format).</param>
+    /// <param name="end">End date for filtering (ISO 8601 format).</param>
+    /// <param name="nextToken">Token for pagination.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A paginated response containing recoveries.</returns>
     public Task<PaginatedResponse<Recovery>?> GetRecoveriesAsync(
         int? limit = null,
         DateTime? start = null,
@@ -168,23 +168,23 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Gets a specific workout by ID
+    /// Gets a specific workout by ID.
     /// </summary>
-    /// <param name="workoutId">The workout ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The workout information</returns>
+    /// <param name="workoutId">The workout ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The workout information.</returns>
     public Task<Workout?> GetWorkoutAsync(int workoutId, CancellationToken cancellationToken = default) =>
         GetAsync<Workout>($"/v2/activity/workout/{workoutId}", cancellationToken);
 
     /// <summary>
-    /// Gets a paginated list of workouts for the user
+    /// Gets a paginated list of workouts for the user.
     /// </summary>
-    /// <param name="limit">Maximum number of records to return (default: 25)</param>
-    /// <param name="start">Start date for filtering (ISO 8601 format)</param>
-    /// <param name="end">End date for filtering (ISO 8601 format)</param>
-    /// <param name="nextToken">Token for pagination</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>A paginated response containing workouts</returns>
+    /// <param name="limit">Maximum number of records to return (default: 25).</param>
+    /// <param name="start">Start date for filtering (ISO 8601 format).</param>
+    /// <param name="end">End date for filtering (ISO 8601 format).</param>
+    /// <param name="nextToken">Token for pagination.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A paginated response containing workouts.</returns>
     public Task<PaginatedResponse<Workout>?> GetWorkoutsAsync(
         int? limit = null,
         DateTime? start = null,
@@ -197,23 +197,23 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Gets a specific sleep by ID
+    /// Gets a specific sleep by ID.
     /// </summary>
-    /// <param name="sleepId">The sleep ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The sleep information</returns>
+    /// <param name="sleepId">The sleep ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The sleep information.</returns>
     public Task<Sleep?> GetSleepAsync(int sleepId, CancellationToken cancellationToken = default) =>
         GetAsync<Sleep>($"/v2/activity/sleep/{sleepId}", cancellationToken);
 
     /// <summary>
-    /// Gets a paginated list of sleep activities for the user
+    /// Gets a paginated list of sleep activities for the user.
     /// </summary>
-    /// <param name="limit">Maximum number of records to return (default: 25)</param>
-    /// <param name="start">Start date for filtering (ISO 8601 format)</param>
-    /// <param name="end">End date for filtering (ISO 8601 format)</param>
-    /// <param name="nextToken">Token for pagination</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>A paginated response containing sleep activities</returns>
+    /// <param name="limit">Maximum number of records to return (default: 25).</param>
+    /// <param name="start">Start date for filtering (ISO 8601 format).</param>
+    /// <param name="end">End date for filtering (ISO 8601 format).</param>
+    /// <param name="nextToken">Token for pagination.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A paginated response containing sleep activities.</returns>
     public Task<PaginatedResponse<Sleep>?> GetSleepsAsync(
         int? limit = null,
         DateTime? start = null,
@@ -226,16 +226,16 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
-    /// Gets the v2 UUID for a given v1 activity ID
+    /// Gets the v2 UUID for a given v1 activity ID.
     /// </summary>
-    /// <param name="activityV1Id">The v1 activity ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The activity mapping information</returns>
+    /// <param name="activityV1Id">The v1 activity ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The activity mapping information.</returns>
     public Task<ActivityMapping?> GetActivityMappingAsync(int activityV1Id, CancellationToken cancellationToken = default) =>
         GetAsync<ActivityMapping>($"/v1/activity-mapping/{activityV1Id}", cancellationToken);
 
     /// <summary>
-    /// Disposes the HttpClient if it was created internally
+    /// Disposes the HttpClient if it was created internally.
     /// </summary>
     public void Dispose()
     {

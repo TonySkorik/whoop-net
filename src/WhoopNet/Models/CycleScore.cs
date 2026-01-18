@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace WhoopNet.Models;
 
 /// <summary>
-/// Represents the score for a cycle
+/// Represents the score for a cycle.
 /// </summary>
 public class CycleScore
 {
@@ -14,19 +14,19 @@ public class CycleScore
     public double? Strain { get; set; }
 
     /// <summary>
-    /// The kilojoules burned
+    /// The kilojoules burned.
     /// </summary>
     [JsonPropertyName("kilojoule")]
     public double? Kilojoule { get; set; }
 
     /// <summary>
-    /// The average heart rate
+    /// The average heart rate.
     /// </summary>
     [JsonPropertyName("average_heart_rate")]
     public int? AverageHeartRate { get; set; }
 
     /// <summary>
-    /// The max heart rate
+    /// The max heart rate.
     /// </summary>
     [JsonPropertyName("max_heart_rate")]
     public int? MaxHeartRate { get; set; }

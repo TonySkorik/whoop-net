@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 namespace WhoopNet.Authentication;
 
 /// <summary>
-/// Helper class for OAuth 2.0 authentication with the WHOOP API
+/// Helper class for OAuth 2.0 authentication with the WHOOP API.
 /// </summary>
 public class WhoopOAuthClient : IDisposable
 {
@@ -16,11 +16,11 @@ public class WhoopOAuthClient : IDisposable
     private const string TokenUrl = "https://api.prod.whoop.com/oauth/oauth2/token";
 
     /// <summary>
-    /// Initializes a new instance of the WhoopOAuthClient class
+    /// Initializes a new instance of the WhoopOAuthClient class.
     /// </summary>
-    /// <param name="clientId">The OAuth 2.0 client ID</param>
-    /// <param name="clientSecret">The OAuth 2.0 client secret</param>
-    /// <param name="httpClient">Optional HttpClient to use for requests</param>
+    /// <param name="clientId">The OAuth 2.0 client ID.</param>
+    /// <param name="clientSecret">The OAuth 2.0 client secret.</param>
+    /// <param name="httpClient">Optional HttpClient to use for requests.</param>
     public WhoopOAuthClient(string clientId, string clientSecret, HttpClient? httpClient = null)
     {
         if (string.IsNullOrWhiteSpace(clientId))
@@ -45,12 +45,12 @@ public class WhoopOAuthClient : IDisposable
     }
 
     /// <summary>
-    /// Builds the authorization URL for the OAuth 2.0 authorization code flow
+    /// Builds the authorization URL for the OAuth 2.0 authorization code flow.
     /// </summary>
-    /// <param name="redirectUri">The redirect URI registered with your WHOOP app</param>
-    /// <param name="scope">Space-separated list of scopes (e.g., "read:profile read:recovery")</param>
-    /// <param name="state">Optional state parameter for CSRF protection</param>
-    /// <returns>The authorization URL to redirect the user to</returns>
+    /// <param name="redirectUri">The redirect URI registered with your WHOOP app.</param>
+    /// <param name="scope">Space-separated list of scopes (e.g., "read:profile read:recovery").</param>
+    /// <param name="state">Optional state parameter for CSRF protection.</param>
+    /// <returns>The authorization URL to redirect the user to.</returns>
     public string BuildAuthorizationUrl(string redirectUri, string scope, string? state = null)
     {
         if (string.IsNullOrWhiteSpace(redirectUri))
@@ -79,12 +79,12 @@ public class WhoopOAuthClient : IDisposable
     }
 
     /// <summary>
-    /// Exchanges an authorization code for an access token
+    /// Exchanges an authorization code for an access token.
     /// </summary>
-    /// <param name="code">The authorization code received from the authorization endpoint</param>
-    /// <param name="redirectUri">The same redirect URI used in the authorization request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The OAuth token response containing the access token</returns>
+    /// <param name="code">The authorization code received from the authorization endpoint.</param>
+    /// <param name="redirectUri">The same redirect URI used in the authorization request.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The OAuth token response containing the access token.</returns>
     public async Task<OAuthTokenResponse?> ExchangeCodeForTokenAsync(
         string code, 
         string redirectUri, 
@@ -113,11 +113,11 @@ public class WhoopOAuthClient : IDisposable
     }
 
     /// <summary>
-    /// Refreshes an access token using a refresh token
+    /// Refreshes an access token using a refresh token.
     /// </summary>
-    /// <param name="refreshToken">The refresh token</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The OAuth token response containing the new access token</returns>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The OAuth token response containing the new access token.</returns>
     public async Task<OAuthTokenResponse?> RefreshTokenAsync(
         string refreshToken, 
         CancellationToken cancellationToken = default)
@@ -141,7 +141,7 @@ public class WhoopOAuthClient : IDisposable
     }
 
     /// <summary>
-    /// Disposes the HttpClient if it was created internally
+    /// Disposes the HttpClient if it was created internally.
     /// </summary>
     public void Dispose()
     {
