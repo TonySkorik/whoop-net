@@ -98,20 +98,16 @@ public class WhoopClient : IDisposable
     /// </summary>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user's profile information</returns>
-    public Task<UserProfile?> GetUserProfileAsync(CancellationToken cancellationToken = default)
-    {
-        return GetAsync<UserProfile>("/v2/user/profile/basic", cancellationToken);
-    }
+    public Task<UserProfile?> GetUserProfileAsync(CancellationToken cancellationToken = default) =>
+        GetAsync<UserProfile>("/v2/user/profile/basic", cancellationToken);
 
     /// <summary>
     /// Gets the user's body measurements
     /// </summary>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user's body measurements</returns>
-    public Task<BodyMeasurement?> GetBodyMeasurementAsync(CancellationToken cancellationToken = default)
-    {
-        return GetAsync<BodyMeasurement>("/v2/user/measurement/body", cancellationToken);
-    }
+    public Task<BodyMeasurement?> GetBodyMeasurementAsync(CancellationToken cancellationToken = default) =>
+        GetAsync<BodyMeasurement>("/v2/user/measurement/body", cancellationToken);
 
     /// <summary>
     /// Gets a specific cycle by ID
@@ -119,10 +115,8 @@ public class WhoopClient : IDisposable
     /// <param name="cycleId">The cycle ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The cycle information</returns>
-    public Task<Cycle?> GetCycleAsync(int cycleId, CancellationToken cancellationToken = default)
-    {
-        return GetAsync<Cycle>($"/v2/cycle/{cycleId}", cancellationToken);
-    }
+    public Task<Cycle?> GetCycleAsync(int cycleId, CancellationToken cancellationToken = default) =>
+        GetAsync<Cycle>($"/v2/cycle/{cycleId}", cancellationToken);
 
     /// <summary>
     /// Gets a paginated list of cycles for the user
@@ -150,10 +144,8 @@ public class WhoopClient : IDisposable
     /// <param name="cycleId">The cycle ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The recovery information</returns>
-    public Task<Recovery?> GetRecoveryAsync(int cycleId, CancellationToken cancellationToken = default)
-    {
-        return GetAsync<Recovery>($"/v2/recovery/{cycleId}", cancellationToken);
-    }
+    public Task<Recovery?> GetRecoveryAsync(int cycleId, CancellationToken cancellationToken = default) =>
+        GetAsync<Recovery>($"/v2/recovery/{cycleId}", cancellationToken);
 
     /// <summary>
     /// Gets a paginated list of recoveries for the user
@@ -181,10 +173,8 @@ public class WhoopClient : IDisposable
     /// <param name="workoutId">The workout ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The workout information</returns>
-    public Task<Workout?> GetWorkoutAsync(int workoutId, CancellationToken cancellationToken = default)
-    {
-        return GetAsync<Workout>($"/v2/activity/workout/{workoutId}", cancellationToken);
-    }
+    public Task<Workout?> GetWorkoutAsync(int workoutId, CancellationToken cancellationToken = default) =>
+        GetAsync<Workout>($"/v2/activity/workout/{workoutId}", cancellationToken);
 
     /// <summary>
     /// Gets a paginated list of workouts for the user
@@ -212,10 +202,8 @@ public class WhoopClient : IDisposable
     /// <param name="sleepId">The sleep ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The sleep information</returns>
-    public Task<Sleep?> GetSleepAsync(int sleepId, CancellationToken cancellationToken = default)
-    {
-        return GetAsync<Sleep>($"/v2/activity/sleep/{sleepId}", cancellationToken);
-    }
+    public Task<Sleep?> GetSleepAsync(int sleepId, CancellationToken cancellationToken = default) =>
+        GetAsync<Sleep>($"/v2/activity/sleep/{sleepId}", cancellationToken);
 
     /// <summary>
     /// Gets a paginated list of sleep activities for the user
@@ -243,10 +231,8 @@ public class WhoopClient : IDisposable
     /// <param name="activityV1Id">The v1 activity ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The activity mapping information</returns>
-    public Task<ActivityMapping?> GetActivityMappingAsync(int activityV1Id, CancellationToken cancellationToken = default)
-    {
-        return GetAsync<ActivityMapping>($"/v1/activity-mapping/{activityV1Id}", cancellationToken);
-    }
+    public Task<ActivityMapping?> GetActivityMappingAsync(int activityV1Id, CancellationToken cancellationToken = default) =>
+        GetAsync<ActivityMapping>($"/v1/activity-mapping/{activityV1Id}", cancellationToken);
 
     /// <summary>
     /// Disposes the HttpClient if it was created internally
