@@ -35,13 +35,10 @@ public class WhoopClientTests
     [Test]
     public void Constructor_WithHttpClient_SetsBaseAddressIfNull()
     {
-        // Arrange
         var httpClient = new HttpClient(_mockHttpMessageHandler.Object);
 
-        // Act
         var client = new WhoopClient(httpClient);
 
-        // Assert
         Assert.That(httpClient.BaseAddress, Is.Not.Null);
         Assert.That(httpClient.BaseAddress!.ToString(), Is.EqualTo("https://api.prod.whoop.com/"));
 
@@ -52,10 +49,8 @@ public class WhoopClientTests
     [Test]
     public void Constructor_WithAccessToken_SetsAuthorizationHeader()
     {
-        // Arrange
         var accessToken = "test-access-token";
 
-        // Act
         using var client = new WhoopClient(accessToken);
 
         // Assert - we can't easily access the internal HttpClient, but we can test it works
@@ -65,38 +60,32 @@ public class WhoopClientTests
     [Test]
     public void Constructor_WithNullHttpClient_ThrowsArgumentNullException()
     {
-        // Act & Assert
         Assert.Throws<ArgumentNullException>(() => new WhoopClient((HttpClient)null!));
     }
 
     [Test]
     public void Constructor_WithEmptyAccessToken_ThrowsArgumentException()
     {
-        // Act & Assert
         Assert.Throws<ArgumentException>(() => new WhoopClient(string.Empty));
     }
 
     [Test]
     public void SetAccessToken_WithValidToken_DoesNotThrow()
     {
-        // Arrange
         var token = "new-access-token";
 
-        // Act & Assert
         Assert.DoesNotThrow(() => _client.SetAccessToken(token));
     }
 
     [Test]
     public void SetAccessToken_WithEmptyToken_ThrowsArgumentException()
     {
-        // Act & Assert
         Assert.Throws<ArgumentException>(() => _client.SetAccessToken(string.Empty));
     }
 
     [Test]
     public async Task GetUserProfileAsync_ReturnsUserProfile()
     {
-        // Arrange
         var expectedProfile = new UserProfile
         {
             UserId = 123,
@@ -107,10 +96,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedProfile);
 
-        // Act
         var result = await _client.GetUserProfileAsync();
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.UserId, Is.EqualTo(expectedProfile.UserId));
         Assert.That(result.Email, Is.EqualTo(expectedProfile.Email));
@@ -121,7 +108,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetBodyMeasurementAsync_ReturnsBodyMeasurement()
     {
-        // Arrange
         var expectedMeasurement = new BodyMeasurement
         {
             HeightMeter = 1.75,
@@ -131,10 +117,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedMeasurement);
 
-        // Act
         var result = await _client.GetBodyMeasurementAsync();
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.HeightMeter, Is.EqualTo(expectedMeasurement.HeightMeter));
         Assert.That(result.WeightKilogram, Is.EqualTo(expectedMeasurement.WeightKilogram));
@@ -144,7 +128,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetCycleAsync_ReturnsCycle()
     {
-        // Arrange
         var cycleId = 12345;
         var expectedCycle = new Cycle
         {
@@ -163,10 +146,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedCycle);
 
-        // Act
         var result = await _client.GetCycleAsync(cycleId);
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Id, Is.EqualTo(expectedCycle.Id));
         Assert.That(result.UserId, Is.EqualTo(expectedCycle.UserId));
@@ -177,7 +158,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetCyclesAsync_ReturnsPaginatedCycles()
     {
-        // Arrange
         var expectedResponse = new PaginatedResponse<Cycle>
         {
             Records = new List<Cycle>
@@ -190,10 +170,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedResponse);
 
-        // Act
         var result = await _client.GetCyclesAsync(limit: 10);
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Records, Is.Not.Null);
         Assert.That(result.Records!.Count, Is.EqualTo(2));
@@ -203,7 +181,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetRecoveryAsync_ReturnsRecovery()
     {
-        // Arrange
         var cycleId = 12345;
         var expectedRecovery = new Recovery
         {
@@ -221,10 +198,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedRecovery);
 
-        // Act
         var result = await _client.GetRecoveryAsync(cycleId);
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.CycleId, Is.EqualTo(expectedRecovery.CycleId));
         Assert.That(result.Score, Is.Not.Null);
@@ -234,7 +209,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetRecoveriesAsync_ReturnsPaginatedRecoveries()
     {
-        // Arrange
         var expectedResponse = new PaginatedResponse<Recovery>
         {
             Records = new List<Recovery>
@@ -246,10 +220,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedResponse);
 
-        // Act
         var result = await _client.GetRecoveriesAsync();
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Records, Is.Not.Null);
         Assert.That(result.Records!.Count, Is.EqualTo(2));
@@ -258,7 +230,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetWorkoutAsync_ReturnsWorkout()
     {
-        // Arrange
         var workoutId = 12345;
         var expectedWorkout = new Workout
         {
@@ -277,10 +248,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedWorkout);
 
-        // Act
         var result = await _client.GetWorkoutAsync(workoutId);
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Id, Is.EqualTo(expectedWorkout.Id));
         Assert.That(result.Score, Is.Not.Null);
@@ -290,7 +259,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetWorkoutsAsync_ReturnsPaginatedWorkouts()
     {
-        // Arrange
         var expectedResponse = new PaginatedResponse<Workout>
         {
             Records = new List<Workout>
@@ -302,10 +270,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedResponse);
 
-        // Act
         var result = await _client.GetWorkoutsAsync();
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Records, Is.Not.Null);
         Assert.That(result.Records!.Count, Is.EqualTo(2));
@@ -314,7 +280,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetSleepAsync_ReturnsSleep()
     {
-        // Arrange
         var sleepId = 12345;
         var expectedSleep = new Sleep
         {
@@ -332,10 +297,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedSleep);
 
-        // Act
         var result = await _client.GetSleepAsync(sleepId);
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Id, Is.EqualTo(expectedSleep.Id));
         Assert.That(result.Nap, Is.EqualTo(expectedSleep.Nap));
@@ -345,7 +308,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetSleepsAsync_ReturnsPaginatedSleeps()
     {
-        // Arrange
         var expectedResponse = new PaginatedResponse<Sleep>
         {
             Records = new List<Sleep>
@@ -357,10 +319,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedResponse);
 
-        // Act
         var result = await _client.GetSleepsAsync();
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Records, Is.Not.Null);
         Assert.That(result.Records!.Count, Is.EqualTo(2));
@@ -369,7 +329,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetActivityMappingAsync_ReturnsActivityMapping()
     {
-        // Arrange
         var activityV1Id = 12345;
         var expectedMapping = new ActivityMapping
         {
@@ -378,10 +337,8 @@ public class WhoopClientTests
 
         SetupMockResponse(HttpStatusCode.OK, expectedMapping);
 
-        // Act
         var result = await _client.GetActivityMappingAsync(activityV1Id);
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.V2ActivityId, Is.EqualTo(expectedMapping.V2ActivityId));
     }
@@ -389,7 +346,6 @@ public class WhoopClientTests
     [Test]
     public async Task GetCyclesAsync_WithDateFilters_BuildsCorrectQueryString()
     {
-        // Arrange
         var start = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var end = new DateTime(2024, 1, 31, 23, 59, 59, DateTimeKind.Utc);
         var expectedResponse = new PaginatedResponse<Cycle>
@@ -414,10 +370,8 @@ public class WhoopClientTests
                 Content = JsonContent.Create(expectedResponse)
             });
 
-        // Act
         await _client.GetCyclesAsync(limit: 25, start: start, end: end, nextToken: "token123");
 
-        // Assert
         Assert.That(capturedUri, Is.Not.Null);
         Assert.That(capturedUri, Does.Contain("limit=25"));
         Assert.That(capturedUri, Does.Contain("start=2024-01-01T00:00:00.000Z"));
@@ -428,10 +382,8 @@ public class WhoopClientTests
     [Test]
     public void GetUserProfileAsync_WithFailedRequest_ThrowsHttpRequestException()
     {
-        // Arrange
         SetupMockResponse<UserProfile>(HttpStatusCode.Unauthorized, null);
 
-        // Act & Assert
         Assert.ThrowsAsync<HttpRequestException>(async () => await _client.GetUserProfileAsync());
     }
 
