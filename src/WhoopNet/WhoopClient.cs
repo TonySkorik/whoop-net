@@ -62,15 +62,45 @@ public class WhoopClient : IDisposable
     }
 
     /// <summary>
+    /// Helper method to perform GET request and deserialize JSON response
+    /// </summary>
+    private async Task<T?> GetAsync<T>(string endpoint, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync(endpoint, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Helper method to build query string from pagination and filter parameters
+    /// </summary>
+    private static string BuildQueryString(int? limit, DateTime? start, DateTime? end, string? nextToken)
+    {
+        var queryParams = new List<string>();
+        
+        if (limit.HasValue)
+            queryParams.Add($"limit={limit.Value}");
+        
+        if (start.HasValue)
+            queryParams.Add($"start={start.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
+        
+        if (end.HasValue)
+            queryParams.Add($"end={end.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
+        
+        if (!string.IsNullOrEmpty(nextToken))
+            queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
+
+        return queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : string.Empty;
+    }
+
+    /// <summary>
     /// Gets the user's basic profile information
     /// </summary>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user's profile information</returns>
-    public async Task<UserProfile?> GetUserProfileAsync(CancellationToken cancellationToken = default)
+    public Task<UserProfile?> GetUserProfileAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync("/v2/user/profile/basic", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<UserProfile>(cancellationToken: cancellationToken);
+        return GetAsync<UserProfile>("/v2/user/profile/basic", cancellationToken);
     }
 
     /// <summary>
@@ -78,11 +108,9 @@ public class WhoopClient : IDisposable
     /// </summary>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user's body measurements</returns>
-    public async Task<BodyMeasurement?> GetBodyMeasurementAsync(CancellationToken cancellationToken = default)
+    public Task<BodyMeasurement?> GetBodyMeasurementAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync("/v2/user/measurement/body", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<BodyMeasurement>(cancellationToken: cancellationToken);
+        return GetAsync<BodyMeasurement>("/v2/user/measurement/body", cancellationToken);
     }
 
     /// <summary>
@@ -91,11 +119,9 @@ public class WhoopClient : IDisposable
     /// <param name="cycleId">The cycle ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The cycle information</returns>
-    public async Task<Cycle?> GetCycleAsync(int cycleId, CancellationToken cancellationToken = default)
+    public Task<Cycle?> GetCycleAsync(int cycleId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"/v2/cycle/{cycleId}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<Cycle>(cancellationToken: cancellationToken);
+        return GetAsync<Cycle>($"/v2/cycle/{cycleId}", cancellationToken);
     }
 
     /// <summary>
@@ -107,31 +133,15 @@ public class WhoopClient : IDisposable
     /// <param name="nextToken">Token for pagination</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>A paginated response containing cycles</returns>
-    public async Task<PaginatedResponse<Cycle>?> GetCyclesAsync(
+    public Task<PaginatedResponse<Cycle>?> GetCyclesAsync(
         int? limit = null,
         DateTime? start = null,
         DateTime? end = null,
         string? nextToken = null,
         CancellationToken cancellationToken = default)
     {
-        var queryParams = new List<string>();
-        
-        if (limit.HasValue)
-            queryParams.Add($"limit={limit.Value}");
-        
-        if (start.HasValue)
-            queryParams.Add($"start={start.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        
-        if (end.HasValue)
-            queryParams.Add($"end={end.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        
-        if (!string.IsNullOrEmpty(nextToken))
-            queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
-
-        var queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : string.Empty;
-        var response = await _httpClient.GetAsync($"/v2/cycle{queryString}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<PaginatedResponse<Cycle>>(cancellationToken: cancellationToken);
+        var queryString = BuildQueryString(limit, start, end, nextToken);
+        return GetAsync<PaginatedResponse<Cycle>>($"/v2/cycle{queryString}", cancellationToken);
     }
 
     /// <summary>
@@ -140,11 +150,9 @@ public class WhoopClient : IDisposable
     /// <param name="cycleId">The cycle ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The recovery information</returns>
-    public async Task<Recovery?> GetRecoveryAsync(int cycleId, CancellationToken cancellationToken = default)
+    public Task<Recovery?> GetRecoveryAsync(int cycleId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"/v2/recovery/{cycleId}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<Recovery>(cancellationToken: cancellationToken);
+        return GetAsync<Recovery>($"/v2/recovery/{cycleId}", cancellationToken);
     }
 
     /// <summary>
@@ -156,31 +164,15 @@ public class WhoopClient : IDisposable
     /// <param name="nextToken">Token for pagination</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>A paginated response containing recoveries</returns>
-    public async Task<PaginatedResponse<Recovery>?> GetRecoveriesAsync(
+    public Task<PaginatedResponse<Recovery>?> GetRecoveriesAsync(
         int? limit = null,
         DateTime? start = null,
         DateTime? end = null,
         string? nextToken = null,
         CancellationToken cancellationToken = default)
     {
-        var queryParams = new List<string>();
-        
-        if (limit.HasValue)
-            queryParams.Add($"limit={limit.Value}");
-        
-        if (start.HasValue)
-            queryParams.Add($"start={start.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        
-        if (end.HasValue)
-            queryParams.Add($"end={end.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        
-        if (!string.IsNullOrEmpty(nextToken))
-            queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
-
-        var queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : string.Empty;
-        var response = await _httpClient.GetAsync($"/v2/recovery{queryString}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<PaginatedResponse<Recovery>>(cancellationToken: cancellationToken);
+        var queryString = BuildQueryString(limit, start, end, nextToken);
+        return GetAsync<PaginatedResponse<Recovery>>($"/v2/recovery{queryString}", cancellationToken);
     }
 
     /// <summary>
@@ -189,11 +181,9 @@ public class WhoopClient : IDisposable
     /// <param name="workoutId">The workout ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The workout information</returns>
-    public async Task<Workout?> GetWorkoutAsync(int workoutId, CancellationToken cancellationToken = default)
+    public Task<Workout?> GetWorkoutAsync(int workoutId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"/v2/activity/workout/{workoutId}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<Workout>(cancellationToken: cancellationToken);
+        return GetAsync<Workout>($"/v2/activity/workout/{workoutId}", cancellationToken);
     }
 
     /// <summary>
@@ -205,31 +195,15 @@ public class WhoopClient : IDisposable
     /// <param name="nextToken">Token for pagination</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>A paginated response containing workouts</returns>
-    public async Task<PaginatedResponse<Workout>?> GetWorkoutsAsync(
+    public Task<PaginatedResponse<Workout>?> GetWorkoutsAsync(
         int? limit = null,
         DateTime? start = null,
         DateTime? end = null,
         string? nextToken = null,
         CancellationToken cancellationToken = default)
     {
-        var queryParams = new List<string>();
-        
-        if (limit.HasValue)
-            queryParams.Add($"limit={limit.Value}");
-        
-        if (start.HasValue)
-            queryParams.Add($"start={start.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        
-        if (end.HasValue)
-            queryParams.Add($"end={end.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        
-        if (!string.IsNullOrEmpty(nextToken))
-            queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
-
-        var queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : string.Empty;
-        var response = await _httpClient.GetAsync($"/v2/activity/workout{queryString}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<PaginatedResponse<Workout>>(cancellationToken: cancellationToken);
+        var queryString = BuildQueryString(limit, start, end, nextToken);
+        return GetAsync<PaginatedResponse<Workout>>($"/v2/activity/workout{queryString}", cancellationToken);
     }
 
     /// <summary>
@@ -238,11 +212,9 @@ public class WhoopClient : IDisposable
     /// <param name="sleepId">The sleep ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The sleep information</returns>
-    public async Task<Sleep?> GetSleepAsync(int sleepId, CancellationToken cancellationToken = default)
+    public Task<Sleep?> GetSleepAsync(int sleepId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"/v2/activity/sleep/{sleepId}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<Sleep>(cancellationToken: cancellationToken);
+        return GetAsync<Sleep>($"/v2/activity/sleep/{sleepId}", cancellationToken);
     }
 
     /// <summary>
@@ -254,31 +226,15 @@ public class WhoopClient : IDisposable
     /// <param name="nextToken">Token for pagination</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>A paginated response containing sleep activities</returns>
-    public async Task<PaginatedResponse<Sleep>?> GetSleepsAsync(
+    public Task<PaginatedResponse<Sleep>?> GetSleepsAsync(
         int? limit = null,
         DateTime? start = null,
         DateTime? end = null,
         string? nextToken = null,
         CancellationToken cancellationToken = default)
     {
-        var queryParams = new List<string>();
-        
-        if (limit.HasValue)
-            queryParams.Add($"limit={limit.Value}");
-        
-        if (start.HasValue)
-            queryParams.Add($"start={start.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        
-        if (end.HasValue)
-            queryParams.Add($"end={end.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
-        
-        if (!string.IsNullOrEmpty(nextToken))
-            queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
-
-        var queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : string.Empty;
-        var response = await _httpClient.GetAsync($"/v2/activity/sleep{queryString}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<PaginatedResponse<Sleep>>(cancellationToken: cancellationToken);
+        var queryString = BuildQueryString(limit, start, end, nextToken);
+        return GetAsync<PaginatedResponse<Sleep>>($"/v2/activity/sleep{queryString}", cancellationToken);
     }
 
     /// <summary>
@@ -287,11 +243,9 @@ public class WhoopClient : IDisposable
     /// <param name="activityV1Id">The v1 activity ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The activity mapping information</returns>
-    public async Task<ActivityMapping?> GetActivityMappingAsync(int activityV1Id, CancellationToken cancellationToken = default)
+    public Task<ActivityMapping?> GetActivityMappingAsync(int activityV1Id, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"/v1/activity-mapping/{activityV1Id}", cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<ActivityMapping>(cancellationToken: cancellationToken);
+        return GetAsync<ActivityMapping>($"/v1/activity-mapping/{activityV1Id}", cancellationToken);
     }
 
     /// <summary>
