@@ -98,7 +98,9 @@ public class WhoopClient : IDisposable
             queryParams.Add($"nextToken={Uri.EscapeDataString(nextToken)}");
         }
 
-        return queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : string.Empty;
+        return queryParams.Count > 0
+            ? "?" + string.Join("&", queryParams)
+            : string.Empty;
     }
 
     /// <summary>

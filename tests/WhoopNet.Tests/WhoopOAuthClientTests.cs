@@ -303,7 +303,9 @@ public class WhoopOAuthClientTests
         var response = new HttpResponseMessage
         {
             StatusCode = statusCode,
-            Content = content != null ? JsonContent.Create(content) : null
+            Content = content != null
+                ? JsonContent.Create(content)
+                : null
         };
 
         _mockHttpMessageHandler
