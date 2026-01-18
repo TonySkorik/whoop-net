@@ -60,15 +60,17 @@ public class WhoopClientTests
     [Test]
     public void Constructor_WithNullHttpClient_ThrowsArgumentNullException()
     {
-        FluentActions.Invoking(() => new WhoopClient((HttpClient)null!))
-            .Should().Throw<ArgumentNullException>();
+        var act = () => new WhoopClient((HttpClient)null!);
+
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Test]
     public void Constructor_WithEmptyAccessToken_ThrowsArgumentException()
     {
-        FluentActions.Invoking(() => new WhoopClient(string.Empty))
-            .Should().Throw<ArgumentException>();
+        var act = () => new WhoopClient(string.Empty);
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -76,15 +78,17 @@ public class WhoopClientTests
     {
         var token = "new-access-token";
 
-        FluentActions.Invoking(() => _client.SetAccessToken(token))
-            .Should().NotThrow();
+        var act = () => _client.SetAccessToken(token);
+
+        act.Should().NotThrow();
     }
 
     [Test]
     public void SetAccessToken_WithEmptyToken_ThrowsArgumentException()
     {
-        FluentActions.Invoking(() => _client.SetAccessToken(string.Empty))
-            .Should().Throw<ArgumentException>();
+        var act = () => _client.SetAccessToken(string.Empty);
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -388,8 +392,9 @@ public class WhoopClientTests
     {
         SetupMockResponse<UserProfile>(HttpStatusCode.Unauthorized, null);
 
-        FluentActions.Awaiting(async () => await _client.GetUserProfileAsync())
-            .Should().ThrowAsync<HttpRequestException>();
+        var act = async () => await _client.GetUserProfileAsync();
+
+        act.Should().ThrowAsync<HttpRequestException>();
     }
 
     private void SetupMockResponse<T>(HttpStatusCode statusCode, T? content)

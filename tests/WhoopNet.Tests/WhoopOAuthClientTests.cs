@@ -43,29 +43,33 @@ public class WhoopOAuthClientTests
     [Test]
     public void Constructor_WithNullClientId_ThrowsArgumentException()
     {
-        FluentActions.Invoking(() => new WhoopOAuthClient(null!, ClientSecret))
-            .Should().Throw<ArgumentException>();
+        var act = () => new WhoopOAuthClient(null!, ClientSecret);
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_WithEmptyClientId_ThrowsArgumentException()
     {
-        FluentActions.Invoking(() => new WhoopOAuthClient(string.Empty, ClientSecret))
-            .Should().Throw<ArgumentException>();
+        var act = () => new WhoopOAuthClient(string.Empty, ClientSecret);
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_WithNullClientSecret_ThrowsArgumentException()
     {
-        FluentActions.Invoking(() => new WhoopOAuthClient(ClientId, null!))
-            .Should().Throw<ArgumentException>();
+        var act = () => new WhoopOAuthClient(ClientId, null!);
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_WithEmptyClientSecret_ThrowsArgumentException()
     {
-        FluentActions.Invoking(() => new WhoopOAuthClient(ClientId, string.Empty))
-            .Should().Throw<ArgumentException>();
+        var act = () => new WhoopOAuthClient(ClientId, string.Empty);
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -99,15 +103,17 @@ public class WhoopOAuthClientTests
     [Test]
     public void BuildAuthorizationUrl_WithNullRedirectUri_ThrowsArgumentException()
     {
-        FluentActions.Invoking(() => _client.BuildAuthorizationUrl(null!, "read:profile"))
-            .Should().Throw<ArgumentException>();
+        var act = () => _client.BuildAuthorizationUrl(null!, "read:profile");
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void BuildAuthorizationUrl_WithEmptyScope_ThrowsArgumentException()
     {
-        FluentActions.Invoking(() => _client.BuildAuthorizationUrl("https://example.com/callback", string.Empty))
-            .Should().Throw<ArgumentException>();
+        var act = () => _client.BuildAuthorizationUrl("https://example.com/callback", string.Empty);
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -177,15 +183,17 @@ public class WhoopOAuthClientTests
     [Test]
     public void ExchangeCodeForTokenAsync_WithNullCode_ThrowsArgumentException()
     {
-        FluentActions.Awaiting(async () => await _client.ExchangeCodeForTokenAsync(null!, "https://example.com/callback"))
-            .Should().ThrowAsync<ArgumentException>();
+        var act = async () => await _client.ExchangeCodeForTokenAsync(null!, "https://example.com/callback");
+
+        act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
     public void ExchangeCodeForTokenAsync_WithEmptyRedirectUri_ThrowsArgumentException()
     {
-        FluentActions.Awaiting(async () => await _client.ExchangeCodeForTokenAsync("code123", string.Empty))
-            .Should().ThrowAsync<ArgumentException>();
+        var act = async () => await _client.ExchangeCodeForTokenAsync("code123", string.Empty);
+
+        act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
@@ -193,8 +201,9 @@ public class WhoopOAuthClientTests
     {
         SetupMockPostResponse<OAuthTokenResponse>(HttpStatusCode.Unauthorized, null);
 
-        FluentActions.Awaiting(async () => await _client.ExchangeCodeForTokenAsync("code123", "https://example.com/callback"))
-            .Should().ThrowAsync<HttpRequestException>();
+        var act = async () => await _client.ExchangeCodeForTokenAsync("code123", "https://example.com/callback");
+
+        act.Should().ThrowAsync<HttpRequestException>();
     }
 
     [Test]
@@ -258,15 +267,17 @@ public class WhoopOAuthClientTests
     [Test]
     public void RefreshTokenAsync_WithNullToken_ThrowsArgumentException()
     {
-        FluentActions.Awaiting(async () => await _client.RefreshTokenAsync(null!))
-            .Should().ThrowAsync<ArgumentException>();
+        var act = async () => await _client.RefreshTokenAsync(null!);
+
+        act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
     public void RefreshTokenAsync_WithEmptyToken_ThrowsArgumentException()
     {
-        FluentActions.Awaiting(async () => await _client.RefreshTokenAsync(string.Empty))
-            .Should().ThrowAsync<ArgumentException>();
+        var act = async () => await _client.RefreshTokenAsync(string.Empty);
+
+        act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
@@ -274,8 +285,9 @@ public class WhoopOAuthClientTests
     {
         SetupMockPostResponse<OAuthTokenResponse>(HttpStatusCode.Unauthorized, null);
 
-        FluentActions.Awaiting(async () => await _client.RefreshTokenAsync("refresh-token-123"))
-            .Should().ThrowAsync<HttpRequestException>();
+        var act = async () => await _client.RefreshTokenAsync("refresh-token-123");
+
+        act.Should().ThrowAsync<HttpRequestException>();
     }
 
     [Test]
@@ -283,7 +295,9 @@ public class WhoopOAuthClientTests
     {
         var client = new WhoopOAuthClient(ClientId, ClientSecret);
 
-        FluentActions.Invoking(() => client.Dispose()).Should().NotThrow();
+        var act = () => client.Dispose();
+
+        act.Should().NotThrow();
     }
 
     [Test]
@@ -294,8 +308,9 @@ public class WhoopOAuthClientTests
 
         client.Dispose();
 
-        // Assert - HttpClient should still be usable
-        FluentActions.Invoking(() => httpClient.Dispose()).Should().NotThrow();
+        var act = () => httpClient.Dispose();
+
+        act.Should().NotThrow();
     }
 
     private void SetupMockPostResponse<T>(HttpStatusCode statusCode, T? content)
