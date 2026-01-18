@@ -2,7 +2,9 @@
 
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Ftonyskorik%2Fwhoop-net%2Fbadge%3Fref%3Dmain&style=flat)](https://actions-badge.atrox.dev/tonyskorik/whoop-net/goto?ref=main)
 ![Test Status](https://github.com/tonyskorik/whoop-net/actions/workflows/test.yml/badge.svg)
-[![NuGet Release][repo-logo]][nuget-url]
+[![NuGet Release][whoop-logo]][nuget-url]
+
+![repo-logo]
 
 A .NET library for interacting with the WHOOP API. This library provides a simple and typed interface to access WHOOP fitness data including cycles, recovery metrics, workouts, sleep activities, and user profiles.
 
@@ -242,4 +244,5 @@ This project follows the repository's MIT license terms.
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
 [Nuget-url]:https://www.nuget.org/packages/WhoopNet/
-[repo-logo]:./whoop-icon.svg
+[whoop-logo]:./whoop-icon.svg
+[repo-logo]:./whoop-logo.svg
