@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/common/">
+    <File Path="Directory.Build.props" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/WhoopNet/WhoopNet.csproj" />
   </Folder>
