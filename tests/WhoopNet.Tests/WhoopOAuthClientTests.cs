@@ -181,29 +181,29 @@ public class WhoopOAuthClientTests
     }
 
     [Test]
-    public void ExchangeCodeForTokenAsync_WithNullCode_ThrowsArgumentException()
+    public async Task ExchangeCodeForTokenAsync_WithNullCode_ThrowsArgumentException()
     {
         var act = async () => await _client.ExchangeCodeForTokenAsync(null!, "https://example.com/callback");
 
-        act.Should().ThrowAsync<ArgumentException>();
+        await act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
-    public void ExchangeCodeForTokenAsync_WithEmptyRedirectUri_ThrowsArgumentException()
+    public async Task ExchangeCodeForTokenAsync_WithEmptyRedirectUri_ThrowsArgumentException()
     {
         var act = async () => await _client.ExchangeCodeForTokenAsync("code123", string.Empty);
 
-        act.Should().ThrowAsync<ArgumentException>();
+        await act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
-    public void ExchangeCodeForTokenAsync_WithFailedRequest_ThrowsHttpRequestException()
+    public async Task ExchangeCodeForTokenAsync_WithFailedRequest_ThrowsHttpRequestException()
     {
         SetupMockPostResponse<OAuthTokenResponse>(HttpStatusCode.Unauthorized, null);
 
         var act = async () => await _client.ExchangeCodeForTokenAsync("code123", "https://example.com/callback");
 
-        act.Should().ThrowAsync<HttpRequestException>();
+        await act.Should().ThrowAsync<HttpRequestException>();
     }
 
     [Test]
@@ -265,29 +265,29 @@ public class WhoopOAuthClientTests
     }
 
     [Test]
-    public void RefreshTokenAsync_WithNullToken_ThrowsArgumentException()
+    public async Task RefreshTokenAsync_WithNullToken_ThrowsArgumentException()
     {
         var act = async () => await _client.RefreshTokenAsync(null!);
 
-        act.Should().ThrowAsync<ArgumentException>();
+        await act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
-    public void RefreshTokenAsync_WithEmptyToken_ThrowsArgumentException()
+    public async Task RefreshTokenAsync_WithEmptyToken_ThrowsArgumentException()
     {
         var act = async () => await _client.RefreshTokenAsync(string.Empty);
 
-        act.Should().ThrowAsync<ArgumentException>();
+        await act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
-    public void RefreshTokenAsync_WithFailedRequest_ThrowsHttpRequestException()
+    public async Task RefreshTokenAsync_WithFailedRequest_ThrowsHttpRequestException()
     {
         SetupMockPostResponse<OAuthTokenResponse>(HttpStatusCode.Unauthorized, null);
 
         var act = async () => await _client.RefreshTokenAsync("refresh-token-123");
 
-        act.Should().ThrowAsync<HttpRequestException>();
+        await act.Should().ThrowAsync<HttpRequestException>();
     }
 
     [Test]

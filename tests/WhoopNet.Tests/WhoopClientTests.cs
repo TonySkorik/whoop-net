@@ -388,13 +388,13 @@ public class WhoopClientTests
     }
 
     [Test]
-    public void GetUserProfileAsync_WithFailedRequest_ThrowsHttpRequestException()
+    public async Task GetUserProfileAsync_WithFailedRequest_ThrowsHttpRequestException()
     {
         SetupMockResponse<UserProfile>(HttpStatusCode.Unauthorized, null);
 
         var act = async () => await _client.GetUserProfileAsync();
 
-        act.Should().ThrowAsync<HttpRequestException>();
+        await act.Should().ThrowAsync<HttpRequestException>();
     }
 
     private void SetupMockResponse<T>(HttpStatusCode statusCode, T? content)
