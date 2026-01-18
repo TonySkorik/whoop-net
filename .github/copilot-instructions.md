@@ -45,3 +45,4 @@
 * Do not emit "Act", "Arrange" or "Assert" comments.
 * Copy existing style in nearby files for test method names and capitalization.
 * Implement `Awaiting` and `Invoking` assertions by firstly emitting a local variable with func to call and assert and then using assrtions on that func call. Always await `ThrowAsync` calls.
+* Place unit test `.cs` files in a directory called `TestClasses` located alongside the test project.
