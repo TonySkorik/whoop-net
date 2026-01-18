@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http.Json;
 using WhoopNet.Models;
 
-namespace WhoopNet.Tests;
+namespace WhoopNet.Tests.TestClasses;
 
 [TestFixture]
 public class WhoopClientTests
