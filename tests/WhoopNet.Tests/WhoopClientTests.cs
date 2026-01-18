@@ -39,8 +39,8 @@ public class WhoopClientTests
 
         var client = new WhoopClient(httpClient);
 
-        Assert.That(httpClient.BaseAddress, Is.Not.Null);
-        Assert.That(httpClient.BaseAddress!.ToString(), Is.EqualTo("https://api.prod.whoop.com/"));
+        httpClient.BaseAddress.Should().NotBeNull();
+        httpClient.BaseAddress!.ToString().Should().Be("https://api.prod.whoop.com/");
 
         client.Dispose();
         httpClient.Dispose();
@@ -54,19 +54,21 @@ public class WhoopClientTests
         using var client = new WhoopClient(accessToken);
 
         // Assert - we can't easily access the internal HttpClient, but we can test it works
-        Assert.That(client, Is.Not.Null);
+        client.Should().NotBeNull();
     }
 
     [Test]
     public void Constructor_WithNullHttpClient_ThrowsArgumentNullException()
     {
-        Assert.Throws<ArgumentNullException>(() => new WhoopClient((HttpClient)null!));
+        FluentActions.Invoking(() => new WhoopClient((HttpClient)null!))
+            .Should().Throw<ArgumentNullException>();
     }
 
     [Test]
     public void Constructor_WithEmptyAccessToken_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new WhoopClient(string.Empty));
+        FluentActions.Invoking(() => new WhoopClient(string.Empty))
+            .Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -74,13 +76,15 @@ public class WhoopClientTests
     {
         var token = "new-access-token";
 
-        Assert.DoesNotThrow(() => _client.SetAccessToken(token));
+        FluentActions.Invoking(() => _client.SetAccessToken(token))
+            .Should().NotThrow();
     }
 
     [Test]
     public void SetAccessToken_WithEmptyToken_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => _client.SetAccessToken(string.Empty));
+        FluentActions.Invoking(() => _client.SetAccessToken(string.Empty))
+            .Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -98,11 +102,11 @@ public class WhoopClientTests
 
         var result = await _client.GetUserProfileAsync();
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.UserId, Is.EqualTo(expectedProfile.UserId));
-        Assert.That(result.Email, Is.EqualTo(expectedProfile.Email));
-        Assert.That(result.FirstName, Is.EqualTo(expectedProfile.FirstName));
-        Assert.That(result.LastName, Is.EqualTo(expectedProfile.LastName));
+        result.Should().NotBeNull();
+        result!.UserId.Should().Be(expectedProfile.UserId);
+        result.Email.Should().Be(expectedProfile.Email);
+        result.FirstName.Should().Be(expectedProfile.FirstName);
+        result.LastName.Should().Be(expectedProfile.LastName);
     }
 
     [Test]
@@ -119,10 +123,10 @@ public class WhoopClientTests
 
         var result = await _client.GetBodyMeasurementAsync();
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.HeightMeter, Is.EqualTo(expectedMeasurement.HeightMeter));
-        Assert.That(result.WeightKilogram, Is.EqualTo(expectedMeasurement.WeightKilogram));
-        Assert.That(result.MaxHeartRate, Is.EqualTo(expectedMeasurement.MaxHeartRate));
+        result.Should().NotBeNull();
+        result!.HeightMeter.Should().Be(expectedMeasurement.HeightMeter);
+        result.WeightKilogram.Should().Be(expectedMeasurement.WeightKilogram);
+        result.MaxHeartRate.Should().Be(expectedMeasurement.MaxHeartRate);
     }
 
     [Test]
@@ -148,11 +152,11 @@ public class WhoopClientTests
 
         var result = await _client.GetCycleAsync(cycleId);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo(expectedCycle.Id));
-        Assert.That(result.UserId, Is.EqualTo(expectedCycle.UserId));
-        Assert.That(result.Score, Is.Not.Null);
-        Assert.That(result.Score!.Strain, Is.EqualTo(expectedCycle.Score.Strain));
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(expectedCycle.Id);
+        result.UserId.Should().Be(expectedCycle.UserId);
+        result.Score.Should().NotBeNull();
+        result.Score!.Strain.Should().Be(expectedCycle.Score.Strain);
     }
 
     [Test]
@@ -172,10 +176,10 @@ public class WhoopClientTests
 
         var result = await _client.GetCyclesAsync(limit: 10);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Records, Is.Not.Null);
-        Assert.That(result.Records!.Count, Is.EqualTo(2));
-        Assert.That(result.NextToken, Is.EqualTo("next-page-token"));
+        result.Should().NotBeNull();
+        result!.Records.Should().NotBeNull();
+        result.Records!.Count.Should().Be(2);
+        result.NextToken.Should().Be("next-page-token");
     }
 
     [Test]
@@ -200,10 +204,10 @@ public class WhoopClientTests
 
         var result = await _client.GetRecoveryAsync(cycleId);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.CycleId, Is.EqualTo(expectedRecovery.CycleId));
-        Assert.That(result.Score, Is.Not.Null);
-        Assert.That(result.Score!.Score, Is.EqualTo(expectedRecovery.Score.Score));
+        result.Should().NotBeNull();
+        result!.CycleId.Should().Be(expectedRecovery.CycleId);
+        result.Score.Should().NotBeNull();
+        result.Score!.Score.Should().Be(expectedRecovery.Score.Score);
     }
 
     [Test]
@@ -222,9 +226,9 @@ public class WhoopClientTests
 
         var result = await _client.GetRecoveriesAsync();
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Records, Is.Not.Null);
-        Assert.That(result.Records!.Count, Is.EqualTo(2));
+        result.Should().NotBeNull();
+        result!.Records.Should().NotBeNull();
+        result.Records!.Count.Should().Be(2);
     }
 
     [Test]
@@ -250,10 +254,10 @@ public class WhoopClientTests
 
         var result = await _client.GetWorkoutAsync(workoutId);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo(expectedWorkout.Id));
-        Assert.That(result.Score, Is.Not.Null);
-        Assert.That(result.Score!.Strain, Is.EqualTo(expectedWorkout.Score.Strain));
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(expectedWorkout.Id);
+        result.Score.Should().NotBeNull();
+        result.Score!.Strain.Should().Be(expectedWorkout.Score.Strain);
     }
 
     [Test]
@@ -272,9 +276,9 @@ public class WhoopClientTests
 
         var result = await _client.GetWorkoutsAsync();
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Records, Is.Not.Null);
-        Assert.That(result.Records!.Count, Is.EqualTo(2));
+        result.Should().NotBeNull();
+        result!.Records.Should().NotBeNull();
+        result.Records!.Count.Should().Be(2);
     }
 
     [Test]
@@ -299,10 +303,10 @@ public class WhoopClientTests
 
         var result = await _client.GetSleepAsync(sleepId);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo(expectedSleep.Id));
-        Assert.That(result.Nap, Is.EqualTo(expectedSleep.Nap));
-        Assert.That(result.Score, Is.Not.Null);
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(expectedSleep.Id);
+        result.Nap.Should().Be(expectedSleep.Nap);
+        result.Score.Should().NotBeNull();
     }
 
     [Test]
@@ -321,9 +325,9 @@ public class WhoopClientTests
 
         var result = await _client.GetSleepsAsync();
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Records, Is.Not.Null);
-        Assert.That(result.Records!.Count, Is.EqualTo(2));
+        result.Should().NotBeNull();
+        result!.Records.Should().NotBeNull();
+        result.Records!.Count.Should().Be(2);
     }
 
     [Test]
@@ -339,8 +343,8 @@ public class WhoopClientTests
 
         var result = await _client.GetActivityMappingAsync(activityV1Id);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.V2ActivityId, Is.EqualTo(expectedMapping.V2ActivityId));
+        result.Should().NotBeNull();
+        result!.V2ActivityId.Should().Be(expectedMapping.V2ActivityId);
     }
 
     [Test]
@@ -372,11 +376,11 @@ public class WhoopClientTests
 
         await _client.GetCyclesAsync(limit: 25, start: start, end: end, nextToken: "token123");
 
-        Assert.That(capturedUri, Is.Not.Null);
-        Assert.That(capturedUri, Does.Contain("limit=25"));
-        Assert.That(capturedUri, Does.Contain("start=2024-01-01T00:00:00.000Z"));
-        Assert.That(capturedUri, Does.Contain("end=2024-01-31T23:59:59.000Z"));
-        Assert.That(capturedUri, Does.Contain("nextToken=token123"));
+        capturedUri.Should().NotBeNull();
+        capturedUri.Should().Contain("limit=25");
+        capturedUri.Should().Contain("start=2024-01-01T00:00:00.000Z");
+        capturedUri.Should().Contain("end=2024-01-31T23:59:59.000Z");
+        capturedUri.Should().Contain("nextToken=token123");
     }
 
     [Test]
@@ -384,7 +388,8 @@ public class WhoopClientTests
     {
         SetupMockResponse<UserProfile>(HttpStatusCode.Unauthorized, null);
 
-        Assert.ThrowsAsync<HttpRequestException>(async () => await _client.GetUserProfileAsync());
+        FluentActions.Awaiting(async () => await _client.GetUserProfileAsync())
+            .Should().ThrowAsync<HttpRequestException>();
     }
 
     private void SetupMockResponse<T>(HttpStatusCode statusCode, T? content)

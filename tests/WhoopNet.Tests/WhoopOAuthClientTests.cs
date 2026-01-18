@@ -36,32 +36,36 @@ public class WhoopOAuthClientTests
     {
         var client = new WhoopOAuthClient(ClientId, ClientSecret);
 
-        Assert.That(client, Is.Not.Null);
+        client.Should().NotBeNull();
         client.Dispose();
     }
 
     [Test]
     public void Constructor_WithNullClientId_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new WhoopOAuthClient(null!, ClientSecret));
+        FluentActions.Invoking(() => new WhoopOAuthClient(null!, ClientSecret))
+            .Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_WithEmptyClientId_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new WhoopOAuthClient(string.Empty, ClientSecret));
+        FluentActions.Invoking(() => new WhoopOAuthClient(string.Empty, ClientSecret))
+            .Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_WithNullClientSecret_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new WhoopOAuthClient(ClientId, null!));
+        FluentActions.Invoking(() => new WhoopOAuthClient(ClientId, null!))
+            .Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_WithEmptyClientSecret_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new WhoopOAuthClient(ClientId, string.Empty));
+        FluentActions.Invoking(() => new WhoopOAuthClient(ClientId, string.Empty))
+            .Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -72,9 +76,9 @@ public class WhoopOAuthClientTests
 
         var url = _client.BuildAuthorizationUrl(redirectUri, scope);
 
-        Assert.That(url, Is.Not.Null);
-        Assert.That(url, Does.StartWith("https://api.prod.whoop.com/oauth/oauth2/auth?"));
-        Assert.That(url, Does.Contain("response_type=code"));
+        url.Should().NotBeNull();
+        url.Should().StartWith("https://api.prod.whoop.com/oauth/oauth2/auth?");
+        url.Should().Contain("response_type=code");
         Assert.That(url, Does.Contain($"client_id={Uri.EscapeDataString(ClientId)}"));
         Assert.That(url, Does.Contain($"redirect_uri={Uri.EscapeDataString(redirectUri)}"));
         Assert.That(url, Does.Contain($"scope={Uri.EscapeDataString(scope)}"));
@@ -95,15 +99,15 @@ public class WhoopOAuthClientTests
     [Test]
     public void BuildAuthorizationUrl_WithNullRedirectUri_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => 
-            _client.BuildAuthorizationUrl(null!, "read:profile"));
+        FluentActions.Invoking(() => _client.BuildAuthorizationUrl(null!, "read:profile"))
+            .Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void BuildAuthorizationUrl_WithEmptyScope_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => 
-            _client.BuildAuthorizationUrl("https://example.com/callback", string.Empty));
+        FluentActions.Invoking(() => _client.BuildAuthorizationUrl("https://example.com/callback", string.Empty))
+            .Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -124,12 +128,12 @@ public class WhoopOAuthClientTests
 
         var result = await _client.ExchangeCodeForTokenAsync(code, redirectUri);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.AccessToken, Is.EqualTo(expectedToken.AccessToken));
-        Assert.That(result.TokenType, Is.EqualTo(expectedToken.TokenType));
-        Assert.That(result.ExpiresIn, Is.EqualTo(expectedToken.ExpiresIn));
-        Assert.That(result.RefreshToken, Is.EqualTo(expectedToken.RefreshToken));
-        Assert.That(result.Scope, Is.EqualTo(expectedToken.Scope));
+        result.Should().NotBeNull();
+        result!.AccessToken.Should().Be(expectedToken.AccessToken);
+        result.TokenType.Should().Be(expectedToken.TokenType);
+        result.ExpiresIn.Should().Be(expectedToken.ExpiresIn);
+        result.RefreshToken.Should().Be(expectedToken.RefreshToken);
+        result.Scope.Should().Be(expectedToken.Scope);
     }
 
     [Test]
@@ -161,27 +165,27 @@ public class WhoopOAuthClientTests
 
         await _client.ExchangeCodeForTokenAsync(code, redirectUri);
 
-        Assert.That(capturedContent, Is.Not.Null);
+        capturedContent.Should().NotBeNull();
         var formData = await capturedContent!.ReadAsStringAsync();
-        Assert.That(formData, Does.Contain("grant_type=authorization_code"));
-        Assert.That(formData, Does.Contain($"code={code}"));
+        formData.Should().Contain("grant_type=authorization_code");
+        formData.Should().Contain($"code={code}");
         Assert.That(formData, Does.Contain($"redirect_uri={Uri.EscapeDataString(redirectUri)}"));
-        Assert.That(formData, Does.Contain($"client_id={ClientId}"));
-        Assert.That(formData, Does.Contain($"client_secret={ClientSecret}"));
+        formData.Should().Contain($"client_id={ClientId}");
+        formData.Should().Contain($"client_secret={ClientSecret}");
     }
 
     [Test]
     public void ExchangeCodeForTokenAsync_WithNullCode_ThrowsArgumentException()
     {
-        Assert.ThrowsAsync<ArgumentException>(async () => 
-            await _client.ExchangeCodeForTokenAsync(null!, "https://example.com/callback"));
+        FluentActions.Awaiting(async () => await _client.ExchangeCodeForTokenAsync(null!, "https://example.com/callback"))
+            .Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
     public void ExchangeCodeForTokenAsync_WithEmptyRedirectUri_ThrowsArgumentException()
     {
-        Assert.ThrowsAsync<ArgumentException>(async () => 
-            await _client.ExchangeCodeForTokenAsync("code123", string.Empty));
+        FluentActions.Awaiting(async () => await _client.ExchangeCodeForTokenAsync("code123", string.Empty))
+            .Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
@@ -189,8 +193,8 @@ public class WhoopOAuthClientTests
     {
         SetupMockPostResponse<OAuthTokenResponse>(HttpStatusCode.Unauthorized, null);
 
-        Assert.ThrowsAsync<HttpRequestException>(async () => 
-            await _client.ExchangeCodeForTokenAsync("code123", "https://example.com/callback"));
+        FluentActions.Awaiting(async () => await _client.ExchangeCodeForTokenAsync("code123", "https://example.com/callback"))
+            .Should().ThrowAsync<HttpRequestException>();
     }
 
     [Test]
@@ -210,9 +214,9 @@ public class WhoopOAuthClientTests
 
         var result = await _client.RefreshTokenAsync(refreshToken);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.AccessToken, Is.EqualTo(expectedToken.AccessToken));
-        Assert.That(result.RefreshToken, Is.EqualTo(expectedToken.RefreshToken));
+        result.Should().NotBeNull();
+        result!.AccessToken.Should().Be(expectedToken.AccessToken);
+        result.RefreshToken.Should().Be(expectedToken.RefreshToken);
     }
 
     [Test]
@@ -243,26 +247,26 @@ public class WhoopOAuthClientTests
 
         await _client.RefreshTokenAsync(refreshToken);
 
-        Assert.That(capturedContent, Is.Not.Null);
+        capturedContent.Should().NotBeNull();
         var formData = await capturedContent!.ReadAsStringAsync();
-        Assert.That(formData, Does.Contain("grant_type=refresh_token"));
-        Assert.That(formData, Does.Contain($"refresh_token={refreshToken}"));
-        Assert.That(formData, Does.Contain($"client_id={ClientId}"));
-        Assert.That(formData, Does.Contain($"client_secret={ClientSecret}"));
+        formData.Should().Contain("grant_type=refresh_token");
+        formData.Should().Contain($"refresh_token={refreshToken}");
+        formData.Should().Contain($"client_id={ClientId}");
+        formData.Should().Contain($"client_secret={ClientSecret}");
     }
 
     [Test]
     public void RefreshTokenAsync_WithNullToken_ThrowsArgumentException()
     {
-        Assert.ThrowsAsync<ArgumentException>(async () => 
-            await _client.RefreshTokenAsync(null!));
+        FluentActions.Awaiting(async () => await _client.RefreshTokenAsync(null!))
+            .Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
     public void RefreshTokenAsync_WithEmptyToken_ThrowsArgumentException()
     {
-        Assert.ThrowsAsync<ArgumentException>(async () => 
-            await _client.RefreshTokenAsync(string.Empty));
+        FluentActions.Awaiting(async () => await _client.RefreshTokenAsync(string.Empty))
+            .Should().ThrowAsync<ArgumentException>();
     }
 
     [Test]
@@ -270,8 +274,8 @@ public class WhoopOAuthClientTests
     {
         SetupMockPostResponse<OAuthTokenResponse>(HttpStatusCode.Unauthorized, null);
 
-        Assert.ThrowsAsync<HttpRequestException>(async () => 
-            await _client.RefreshTokenAsync("refresh-token-123"));
+        FluentActions.Awaiting(async () => await _client.RefreshTokenAsync("refresh-token-123"))
+            .Should().ThrowAsync<HttpRequestException>();
     }
 
     [Test]
@@ -279,7 +283,7 @@ public class WhoopOAuthClientTests
     {
         var client = new WhoopOAuthClient(ClientId, ClientSecret);
 
-        Assert.DoesNotThrow(() => client.Dispose());
+        FluentActions.Invoking(() => client.Dispose()).Should().NotThrow();
     }
 
     [Test]
@@ -291,7 +295,7 @@ public class WhoopOAuthClientTests
         client.Dispose();
 
         // Assert - HttpClient should still be usable
-        Assert.DoesNotThrow(() => httpClient.Dispose());
+        FluentActions.Invoking(() => httpClient.Dispose()).Should().NotThrow();
     }
 
     private void SetupMockPostResponse<T>(HttpStatusCode statusCode, T? content)
