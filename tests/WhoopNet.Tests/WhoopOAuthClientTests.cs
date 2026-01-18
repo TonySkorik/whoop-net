@@ -79,9 +79,9 @@ public class WhoopOAuthClientTests
         url.Should().NotBeNull();
         url.Should().StartWith("https://api.prod.whoop.com/oauth/oauth2/auth?");
         url.Should().Contain("response_type=code");
-        Assert.That(url, Does.Contain($"client_id={Uri.EscapeDataString(ClientId)}"));
-        Assert.That(url, Does.Contain($"redirect_uri={Uri.EscapeDataString(redirectUri)}"));
-        Assert.That(url, Does.Contain($"scope={Uri.EscapeDataString(scope)}"));
+        url.Should().Contain($"client_id={Uri.EscapeDataString(ClientId)}");
+        url.Should().Contain($"redirect_uri={Uri.EscapeDataString(redirectUri)}");
+        url.Should().Contain($"scope={Uri.EscapeDataString(scope)}");
     }
 
     [Test]
@@ -93,7 +93,7 @@ public class WhoopOAuthClientTests
 
         var url = _client.BuildAuthorizationUrl(redirectUri, scope, state);
 
-        Assert.That(url, Does.Contain($"state={Uri.EscapeDataString(state)}"));
+        url.Should().Contain($"state={Uri.EscapeDataString(state)}");
     }
 
     [Test]
@@ -169,7 +169,7 @@ public class WhoopOAuthClientTests
         var formData = await capturedContent!.ReadAsStringAsync();
         formData.Should().Contain("grant_type=authorization_code");
         formData.Should().Contain($"code={code}");
-        Assert.That(formData, Does.Contain($"redirect_uri={Uri.EscapeDataString(redirectUri)}"));
+        formData.Should().Contain($"redirect_uri={Uri.EscapeDataString(redirectUri)}");
         formData.Should().Contain($"client_id={ClientId}");
         formData.Should().Contain($"client_secret={ClientSecret}");
     }
