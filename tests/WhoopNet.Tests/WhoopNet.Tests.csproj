@@ -20,11 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="NUnit.Framework" />
-    <Using Include="FluentAssertions" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\WhoopNet\WhoopNet.csproj" />
   </ItemGroup>
 
