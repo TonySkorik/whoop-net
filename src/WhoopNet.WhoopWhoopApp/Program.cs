@@ -1,5 +1,5 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Reflection;
 using WhoopNet.WhoopWhoopApp.Components;
 using WhoopNet.WhoopWhoopApp.Configuration;
@@ -19,6 +19,7 @@ builder.Services.AddAuthentication(options =>
 .AddOAuth("",
     options =>
 {
+
     var oauthSettings = Configuration.GetSection("OAuthSettings").Get<OAuthSettings>();
     options.ClientId = oauthSettings.ClientId;
     options.ClientSecret = oauthSettings.ClientSecret;
@@ -30,6 +31,9 @@ builder.Services.AddAuthentication(options =>
     // Add any additional scopes or configuration here
 });
 
+var t = new AuthenticationStateProvider();
+
+(await t.GetAuthenticationStateAsync()).User.
 
 // Api backend
 builder.Services.AddControllers();
