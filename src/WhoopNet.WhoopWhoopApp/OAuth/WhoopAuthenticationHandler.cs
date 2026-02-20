@@ -46,6 +46,30 @@ public partial class WhoopAuthenticationHandler : OAuthHandler<WhoopAuthenticati
 		return base.HandleRemoteAuthenticateAsync();
 	}
 
+	/// <inheritdoc />
+	protected override string BuildChallengeUrl([NotNull] AuthenticationProperties properties, [NotNull] string redirectUri)
+	{
+		var scopeParameter = properties.GetParameter<ICollection<string>>(OAuthChallengeProperties.ScopeKey);
+		var scope = scopeParameter != null ? FormatScope(scopeParameter) : FormatScope();
+
+		var parameters = new Dictionary<string, string?>
+		{
+			["response_type"] = "code",
+			["client_id"] = Options.ClientId,
+			["redirect_uri"] = redirectUri,
+			["scope"] = scope
+		};
+
+		foreach (var additionalParameter in Options.AdditionalAuthorizationParameters)
+		{
+			parameters.Add(additionalParameter.Key, additionalParameter.Value);
+		}
+
+		parameters["state"] = Options.StateDataFormat.Protect(properties);
+
+		return QueryHelpers.AddQueryString(Options.AuthorizationEndpoint, parameters);
+	}
+
 	protected override async Task<OAuthTokenResponse> ExchangeCodeAsync([NotNull] OAuthCodeExchangeContext context)
 	{
 		if (string.IsNullOrWhiteSpace(context.Code))
@@ -251,43 +275,6 @@ public partial class WhoopAuthenticationHandler : OAuthHandler<WhoopAuthenticati
 	private static string GetUserIdentifier(JsonElement element)
 	{
 		return element.TryGetProperty("user_id", out JsonElement userIdElement) ? userIdElement.GetString()! : element.GetString("open_id")!;
-	}
-
-	/// <inheritdoc />
-	protected override string BuildChallengeUrl([NotNull] AuthenticationProperties properties, [NotNull] string redirectUri)
-	{
-		var scopeParameter = properties.GetParameter<ICollection<string>>(OAuthChallengeProperties.ScopeKey);
-		var scope = scopeParameter != null ? FormatScope(scopeParameter) : FormatScope();
-
-		var parameters = new Dictionary<string, string?>
-		{
-			["response_type"] = "code",
-			["client_id"] = Options.ClientId,
-			["redirect_uri"] = redirectUri,
-			["scope"] = scope
-		};
-
-		foreach (var additionalParameter in Options.AdditionalAuthorizationParameters)
-		{
-			parameters.Add(additionalParameter.Key, additionalParameter.Value);
-		}
-
-		if (Options.UsePkce)
-		{
-			var bytes = RandomNumberGenerator.GetBytes(256 / 8);
-			var codeVerifier = WebEncoders.Base64UrlEncode(bytes);
-
-			// Store this for use during the code redemption.
-			properties.Items.Add(OAuthConstants.CodeVerifierKey, codeVerifier);
-
-			var challengeBytes = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));
-			parameters[OAuthConstants.CodeChallengeKey] = WebEncoders.Base64UrlEncode(challengeBytes);
-			parameters[OAuthConstants.CodeChallengeMethodKey] = OAuthConstants.CodeChallengeMethodS256;
-		}
-
-		parameters["state"] = Options.StateDataFormat.Protect(properties);
-
-		return QueryHelpers.AddQueryString(Options.AuthorizationEndpoint, parameters);
 	}
 
 	private static bool TryStandardizeRemoteAuthenticateQuery(IQueryCollection query, out QueryString queryString)
