@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace WhoopNet.WhoopWhoopApp.Components.Pages.Identity;
+namespace WhoopNet.WhoopWhoopApp.Pages.Identity;
 
 public class Logout(ILogger<Logout> logger) : PageModel
 {

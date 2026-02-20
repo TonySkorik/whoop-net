@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace WhoopNet.WhoopWhoopApp.Components.Pages.Identity;
+namespace WhoopNet.WhoopWhoopApp.Pages.Identity;
 
 [AllowAnonymous]
 public class Login : PageModel

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 using System.Reflection;
 using WhoopNet.WhoopWhoopApp.Components;
 using WhoopNet.WhoopWhoopApp.Configuration;
+using WhoopNet.WhoopWhoopApp.OAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,24 +10,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 
-builder.Services.AddAuthentication();
-//.AddWhoop(options =>
-//{
-//	//var appSettings = builder.Configuration.Get<AppSettings>() ?? throw new InvalidOperationException("Configuration is null");
+builder.Services.AddAuthentication()
+.AddWhoop(options =>
+{
+	//var appSettings = builder.Configuration.Get<AppSettings>() ?? throw new InvalidOperationException("Configuration is null");
 
-//	options.ClientId = builder.Configuration.GetExpectedValue<string>("Auth:ClientId");
+	options.ClientId = builder.Configuration.GetExpectedValue<string>("Auth:ClientId");
 
-//	options.ClientSecret = builder.Configuration.GetExpectedValue<string>("Auth:ClientSecret");
+	options.ClientSecret = builder.Configuration.GetExpectedValue<string>("Auth:ClientSecret");
 
-//	options.Scope.Add(WhoopNet.Models.Scopes.Profile);
-//	options.Scope.Add(WhoopNet.Models.Scopes.Recovery);
-//	options.Scope.Add(WhoopNet.Models.Scopes.Cycles);
-//	options.Scope.Add(WhoopNet.Models.Scopes.Sleep);
-//	options.Scope.Add(WhoopNet.Models.Scopes.Workout);
-//	options.Scope.Add(WhoopNet.Models.Scopes.BodyMeasurement);
+	options.Scope.Add(WhoopNet.Models.Scopes.Profile);
+	options.Scope.Add(WhoopNet.Models.Scopes.Recovery);
+	options.Scope.Add(WhoopNet.Models.Scopes.Cycles);
+	options.Scope.Add(WhoopNet.Models.Scopes.Sleep);
+	options.Scope.Add(WhoopNet.Models.Scopes.Workout);
+	options.Scope.Add(WhoopNet.Models.Scopes.BodyMeasurement);
 
-//	options.CallbackPath = "/oauth/redirect";
-//});
+	options.CallbackPath = "/oauth/redirect";
+});
 
 // Api backend
 
@@ -65,8 +66,21 @@ if (app.Environment.IsDevelopment())
 
 //app.MapControllers();
 
+//app
+//	//.UseHttpsRedirection()
+//	.UseStaticFiles()
+//	.UseCookiePolicy()
+//	.UseAuthorization()
+//	.UseAuthentication();
+//.UseRouting();
+
+app.MapRazorPages();
+app.MapBlazorHub();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+//app.MapFallbackToPage("/_Host");
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
