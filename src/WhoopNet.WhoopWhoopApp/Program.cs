@@ -1,39 +1,32 @@
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 using WhoopNet.WhoopWhoopApp.Components;
 using WhoopNet.WhoopWhoopApp.Configuration;
+using WhoopNet.WhoopWhoopApp.OAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+	.AddInteractiveServerComponents();
 
-builder.Services.AddAuthentication(options =>
-{
-    //options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    //options.DefaultChallengeScheme = OAuthConstants.CodeChallengeKey; //OpenIdConnectDefaults.AuthenticationScheme;
-})
-.AddCookie()
-.AddOAuth("",
-    options =>
-{
+builder.Services.AddAuthentication()
+	.AddWhoop(options =>
+	{
+		var appSettings = builder.Configuration.Get<AppSettings>() ?? throw new InvalidOperationException("Configuration is null");
 
-    var oauthSettings = Configuration.GetSection("OAuthSettings").Get<OAuthSettings>();
-    options.ClientId = oauthSettings.ClientId;
-    options.ClientSecret = oauthSettings.ClientSecret;
-    options.Authority = oauthSettings.Authority;
-    options.CallbackPath = oauthSettings.CallbackPath;
-    options.ResponseType = OpenIdConnectResponseType.Code;
-    options.Scope.Add("profile");
-    options.Scope.Add("email");
-    // Add any additional scopes or configuration here
-});
+		options.ClientId = appSettings.Auth.ClientId;
+		options.ClientSecret = appSettings.Auth.ClientSecret;
 
-var t = new AuthenticationStateProvider();
+		options.Scope.Add(WhoopNet.Models.Scopes.Profile);
+		options.Scope.Add(WhoopNet.Models.Scopes.Recovery);
+		options.Scope.Add(WhoopNet.Models.Scopes.Cycles);
+		options.Scope.Add(WhoopNet.Models.Scopes.Sleep);
+		options.Scope.Add(WhoopNet.Models.Scopes.Workout);
+		options.Scope.Add(WhoopNet.Models.Scopes.BodyMeasurement);
 
-(await t.GetAuthenticationStateAsync()).User.
+		options.CallbackPath = "/oauth/redirect";
+	});
 
 // Api backend
 builder.Services.AddControllers();
@@ -49,7 +42,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+	app.UseExceptionHandler("/Error", createScopeForErrors: true);
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseAntiforgery();
@@ -59,7 +52,7 @@ app.UseAntiforgery();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+	app.MapOpenApi();
 }
 
 app.MapControllers();
@@ -69,6 +62,6 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+	.AddInteractiveServerRenderMode();
 
 app.Run();
