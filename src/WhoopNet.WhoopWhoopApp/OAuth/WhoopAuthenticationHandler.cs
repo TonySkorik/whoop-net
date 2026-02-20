@@ -48,6 +48,33 @@ public partial class WhoopAuthenticationHandler : OAuthHandler<WhoopAuthenticati
 
 	protected override async Task<OAuthTokenResponse> ExchangeCodeAsync([NotNull] OAuthCodeExchangeContext context)
 	{
+		if (string.IsNullOrWhiteSpace(context.Code))
+		{
+			throw new ArgumentException("Authorization code cannot be null or empty", nameof(context.Code));
+		}
+
+		if (string.IsNullOrWhiteSpace(context.RedirectUri))
+		{
+			throw new ArgumentException("Redirect URI cannot be null or empty", nameof(context.RedirectUri));
+		}
+
+		var requestData = new Dictionary<string, string>
+		{
+			["grant_type"] = "authorization_code",
+			["code"] = context.Code,
+			["redirect_uri"] = context.RedirectUri,
+			["client_id"] = Options.ClientId,
+			["client_secret"] = Options.ClientSecret
+		};
+
+		var content = new FormUrlEncodedContent(requestData);
+		var response = await Backchannel.PostAsync(Options.TokenEndpoint, content, Context.RequestAborted);
+		response.EnsureSuccessStatusCode();
+
+		var oauthResponse = await response.Content.ReadFromJsonAsync<OAuthTokenResponse>(cancellationToken: Context.RequestAborted);
+
+		return oauthResponse!;
+
 		// See https://opendocs.alipay.com/apis/api_9/alipay.system.oauth.token for details.
 		var tokenRequestParameters = new SortedDictionary<string, string?>()
 		{
@@ -61,35 +88,36 @@ public partial class WhoopAuthenticationHandler : OAuthHandler<WhoopAuthenticati
 			["timestamp"] = TimeProvider.GetUtcNow().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
 			["version"] = "1.0",
 		};
-		tokenRequestParameters.Add("sign", GetRSA2Signature(tokenRequestParameters));
 
-		// PKCE https://tools.ietf.org/html/rfc7636#section-4.5, see BuildChallengeUrl
-		if (context.Properties.Items.TryGetValue(OAuthConstants.CodeVerifierKey, out var codeVerifier))
-		{
-			tokenRequestParameters.Add(OAuthConstants.CodeVerifierKey, codeVerifier);
-			context.Properties.Items.Remove(OAuthConstants.CodeVerifierKey);
-		}
+		//tokenRequestParameters.Add("sign", GetRSA2Signature(tokenRequestParameters));
 
-		var address = QueryHelpers.AddQueryString(Options.TokenEndpoint, tokenRequestParameters);
+		//// PKCE https://tools.ietf.org/html/rfc7636#section-4.5, see BuildChallengeUrl
+		//if (context.Properties.Items.TryGetValue(OAuthConstants.CodeVerifierKey, out var codeVerifier))
+		//{
+		//	tokenRequestParameters.Add(OAuthConstants.CodeVerifierKey, codeVerifier);
+		//	context.Properties.Items.Remove(OAuthConstants.CodeVerifierKey);
+		//}
 
-		using var response = await Backchannel.GetAsync(address, HttpCompletionOption.ResponseHeadersRead, Context.RequestAborted);
-		if (!response.IsSuccessStatusCode)
-		{
-			await Log.AccessTokenError(Logger, response, Context.RequestAborted);
-			return OAuthTokenResponse.Failed(new Exception("An error occurred while retrieving an access token."));
-		}
+		//var address = QueryHelpers.AddQueryString(Options.TokenEndpoint, tokenRequestParameters);
 
-		using var stream = await response.Content.ReadAsStreamAsync(Context.RequestAborted);
-		using var document = await JsonDocument.ParseAsync(stream);
+		//using var response = await Backchannel.GetAsync(address, HttpCompletionOption.ResponseHeadersRead, Context.RequestAborted);
+		//if (!response.IsSuccessStatusCode)
+		//{
+		//	await Log.AccessTokenError(Logger, response, Context.RequestAborted);
+		//	return OAuthTokenResponse.Failed(new Exception("An error occurred while retrieving an access token."));
+		//}
 
-		var mainElement = document.RootElement.GetProperty("alipay_system_oauth_token_response");
-		if (!ValidateReturnCode(mainElement, out var code, out var subCode))
-		{
-			return OAuthTokenResponse.Failed(new Exception($"An error (Code:{code} subCode:{subCode}) occurred while retrieving an access token."));
-		}
+		//using var stream = await response.Content.ReadAsStreamAsync(Context.RequestAborted);
+		//using var document = await JsonDocument.ParseAsync(stream);
 
-		var payload = JsonDocument.Parse(mainElement.GetRawText());
-		return OAuthTokenResponse.Success(payload);
+		//var mainElement = document.RootElement.GetProperty("alipay_system_oauth_token_response");
+		//if (!ValidateReturnCode(mainElement, out var code, out var subCode))
+		//{
+		//	return OAuthTokenResponse.Failed(new Exception($"An error (Code:{code} subCode:{subCode}) occurred while retrieving an access token."));
+		//}
+
+		//var payload = JsonDocument.Parse(mainElement.GetRawText());
+		//return OAuthTokenResponse.Success(payload);
 	}
 
 	protected override async Task<AuthenticationTicket> CreateTicketAsync(
