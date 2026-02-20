@@ -22,7 +22,7 @@ public class WhoopAuthenticationOptions : OAuthOptions
 		TokenEndpoint = WhoopAuthenticationDefaults.TokenEndpoint;
 		UserInformationEndpoint = WhoopAuthenticationDefaults.UserInformationEndpoint;
 
-		Scope.Add("auth_user");
+		//Scope.Add("auth_user");
 
 		//ClaimActions.MapJsonKey(Claims.Avatar, "avatar");
 		//ClaimActions.MapJsonKey(Claims.City, "city");

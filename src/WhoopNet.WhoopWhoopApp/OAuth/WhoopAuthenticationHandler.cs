@@ -177,7 +177,7 @@ public partial class WhoopAuthenticationHandler : OAuthHandler<WhoopAuthenticati
 		return new AuthenticationTicket(context.Principal!, context.Properties, Scheme.Name);
 	}
 
-	protected override string FormatScope([NotNull] IEnumerable<string> scopes) => string.Join(',', Options.Scope);
+	protected override string FormatScope([NotNull] IEnumerable<string> scopes) => string.Join(' ', Options.Scope);
 
 	/// <summary>
 	/// Check the code sent back by server for potential server errors.
@@ -250,12 +250,7 @@ public partial class WhoopAuthenticationHandler : OAuthHandler<WhoopAuthenticati
 	/// <returns>UserId or OpenId</returns>
 	private static string GetUserIdentifier(JsonElement element)
 	{
-		if (element.TryGetProperty("user_id", out JsonElement userIdElement))
-		{
-			return userIdElement.GetString()!;
-		}
-
-		return element.GetString("open_id")!;
+		return element.TryGetProperty("user_id", out JsonElement userIdElement) ? userIdElement.GetString()! : element.GetString("open_id")!;
 	}
 
 	/// <inheritdoc />
@@ -266,10 +261,10 @@ public partial class WhoopAuthenticationHandler : OAuthHandler<WhoopAuthenticati
 
 		var parameters = new Dictionary<string, string?>
 		{
-			["app_id"] = Options.ClientId, // Used instead of "client_id"
-			["scope"] = scope,
 			["response_type"] = "code",
+			["client_id"] = Options.ClientId,
 			["redirect_uri"] = redirectUri,
+			["scope"] = scope
 		};
 
 		foreach (var additionalParameter in Options.AdditionalAuthorizationParameters)
